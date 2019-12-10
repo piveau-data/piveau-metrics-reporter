@@ -1,0 +1,96 @@
+# Note: An invalid OpenAPI 3 yaml file will cause the following exception at startup:
+# io.vertx.ext.web.api.contract.RouterFactoryException: Wrong specification url/path: webroot/openapi.yaml
+
+openapi: 3.0.0
+
+info:
+  version: 0.0.1-alpha
+  title: MQA Report Generator
+  x-logo:
+    url: "./edplogo.png"
+
+servers:
+  - url: 'http://localhost:8089'
+    description: Local development server
+
+paths:
+
+  /generate:
+    post:
+      description: Generate all reports
+      summary: Generates a global report for all specified languages
+      operationId: generateReports
+      security:
+        - ApiKeyAuth: []
+      responses:
+        202:
+          description: Request accepted
+        500:
+          description: Internal server error
+
+  /report/{languageCode}/{format}:
+    get:
+      description: Get report
+      summary: Initiates a file download for the report of the specified language in the given format
+      operationId: downloadReport
+      parameters:
+        - name: languageCode
+          in: path
+          description: Language code of the report to be retrieved
+          required: true
+          schema:
+            type: string
+            enum:
+              - bg
+              - cs
+              - da
+              - de
+              - el
+              - en
+              - es
+              - et
+              - fi
+              - fr
+              - ga
+              - hr
+              - hu
+              - it
+              - lt
+              - lv
+              - mt
+              - nl
+              - no
+              - pl
+              - pt
+              - ro
+              - sk
+              - sl
+              - sv
+        - name: format
+          in: path
+          description: Format of the report
+          required: true
+          schema:
+            type: string
+            enum:
+              - xls
+              - ods
+              - pdf
+      responses:
+        200:
+          description: Request accepted
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        500:
+          description: Internal server error
+
+components:
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
